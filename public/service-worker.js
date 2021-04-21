@@ -1,17 +1,21 @@
 const FILES_TO_CACHE = [
-  './',
-  './index.html',
-  './assets/css/styles.css',
-  './assets/icons/icon-192x192.png',
-  './assets/icons/icon-512x512.png'
+  '/',
+  '/index',
+  '/assets/css/styles.css',
+  "./dist/bundle.js",
+  "./index.bundle.js",
+  "/manifest.json",
+  "/manifest.webmanifest",
+  '/assets/icons/icon-192x192.png',
+  '/assets/icons/icon-512x512.png',
+  'https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
 ];
 
 const CACHE_NAME = "static-cache-v2";
 const DATA_CACHE_NAME = "data-cache-v1";
 
-// TODO: add listener and handler to cache static assets
 // install
-self.addEventListener("install", function (evt) {
+self.addEventListener("install", function(evt) {
   evt.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       console.log("Your files were pre-cached successfully!");
@@ -22,12 +26,12 @@ self.addEventListener("install", function (evt) {
   self.skipWaiting();
 });
 
-self.addEventListener("activate", function (evt) {
+self.addEventListener("activate", function(evt) {
   evt.waitUntil(
     caches.keys().then(keyList => {
       return Promise.all(
         keyList.map(key => {
-          if (key !== CACHE_NAME) {
+          if (key !== CACHE_NAME && key !== DATA_CACHE_NAME) {
             console.log("Removing old cache data", key);
             return caches.delete(key);
           }
@@ -39,10 +43,8 @@ self.addEventListener("activate", function (evt) {
   self.clients.claim();
 });
 
-// TODO: add listener and handler to retrieve static assets from the Cache Storage in the browser 
-
 // fetch
-self.addEventListener("fetch", function (evt) {
+self.addEventListener("fetch", function(evt) {
   // cache successful requests to the API
   if (evt.request.url.includes("/api/")) {
     evt.respondWith(
@@ -67,9 +69,8 @@ self.addEventListener("fetch", function (evt) {
   }
 
   // if the request is not for the API, serve static assets using "offline-first" approach.
-  // see https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook#cache-falling-back-to-network
   evt.respondWith(
-    caches.match(evt.request).then(function (response) {
+    caches.match(evt.request).then(function(response) {
       return response || fetch(evt.request);
     })
   );
