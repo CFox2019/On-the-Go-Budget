@@ -3,10 +3,10 @@ const path = require("path");
 
 const config = {
   mode: "development",
-  entry: ["./public/assets/js/indexedDb.js", "./public/assets/js/index.js"],
+  entry: ["./public/assets/js/db.js", "./public/assets/js/index.js"],
   output: {
     path: __dirname + "/public/dist",
-    filename: "bundle.js",
+    filename: "bundle.js"
   },
   module: {
     rules: [
